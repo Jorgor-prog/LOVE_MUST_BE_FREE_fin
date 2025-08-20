@@ -1,41 +1,22 @@
 import { NextResponse } from 'next/server'
 import { login } from '@/lib/auth'
 
-async function readCreds(req: Request) {
-  const ct = req.headers.get('content-type') || ''
-  if (ct.includes('application/json')) {
-    const b = await req.json()
-    return { loginId: b.loginId || b.username || '', password: b.password || '' }
-  }
-  if (ct.includes('application/x-www-form-urlencoded')) {
-    const t = await req.text()
-    const p = new URLSearchParams(t)
-    return { loginId: p.get('loginId') || p.get('username') || '', password: p.get('password') || '' }
-  }
-  if (ct.includes('multipart/form-data')) {
-    const f = await req.formData()
-    return { loginId: String(f.get('loginId') ?? f.get('username') ?? ''), password: String(f.get('password') ?? '') }
-  }
-  try {
-    const b = await req.json()
-    return { loginId: b.loginId || b.username || '', password: b.password || '' }
-  } catch {
-    const t = await req.text().catch(() => '')
-    const p = new URLSearchParams(t)
-    return { loginId: p.get('loginId') || p.get('username') || '', password: p.get('password') || '' }
-  }
-}
-
 export async function POST(req: Request) {
-  const { loginId, password } = await readCreds(req)
-  if (!loginId || !password) {
-    return NextResponse.redirect(new URL('/login?error=missing_credentials', req.url), { headers: { 'Cache-Control': 'no-store' } })
+  const ct = req.headers.get('content-type') || ''
+  let loginId = ''
+  let password = ''
+
+  if (ct.includes('application/x-www-form-urlencoded') || ct.includes('multipart/form-data')) {
+    const form = await req.formData()
+    loginId = String(form.get('loginId') ?? '')
+    password = String(form.get('password') ?? '')
+  } else {
+    const body = await req.json().catch(() => ({} as any))
+    loginId = String(body.loginId ?? '')
+    password = String(body.password ?? '')
   }
-  try {
-    const u = await login(loginId, password)
-    const to = u?.role === 'ADMIN' ? '/admin' : '/dashboard'
-    return NextResponse.redirect(new URL(to, req.url), { headers: { 'Cache-Control': 'no-store' } })
-  } catch {
-    return NextResponse.redirect(new URL('/login?error=invalid_credentials', req.url), { headers: { 'Cache-Control': 'no-store' } })
-  }
+
+  await login(loginId, password)
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return NextResponse.redirect(new URL('/', base))
 }
