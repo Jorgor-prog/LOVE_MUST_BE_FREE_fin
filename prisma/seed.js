@@ -1,21 +1,24 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
-const ADMIN_LOGIN = process.env.ADMIN_LOGIN || "admin"
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin"
 
-async function main(){
-  await prisma.user.upsert({
-    where:{ loginId: ADMIN_LOGIN },
-    update:{ loginPassword: ADMIN_PASSWORD, role:"ADMIN" },
-    create:{
-      role:"ADMIN",
-      loginId: ADMIN_LOGIN,
-      loginPassword: ADMIN_PASSWORD,
-      adminNoteName:"Admin",
-      profile:{ create:{} },
-      codeConfig:{ create:{ lastStep:6 } }
-    }
-  })
+async function main() {
+  const login = process.env.ADMIN_LOGIN || 'admin'
+  const password = process.env.ADMIN_PASSWORD || 'admin'
+  const hash = await bcrypt.hash(password, 10)
+
+  const existing = await prisma.user.findUnique({ where: { loginId: login } })
+  if (!existing) {
+    await prisma.user.create({
+      data: { loginId: login, loginPassword: hash, role: 'ADMIN' }
+    })
+  }
 }
-main().then(()=>process.exit(0)).catch(e=>{ console.error(e); process.exit(1) })
+
+main()
+  .catch(() => {})
+  .finally(async () => {
+    await prisma.$disconnect()
+    process.exit(0)
+  })
