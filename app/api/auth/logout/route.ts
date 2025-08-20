@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-import { getSessionToken, clearSession } from '@/lib/cookies'
 import { cookies } from 'next/headers'
+import { clearSession } from '@/lib/cookies'
 
 export async function GET() {
-  const token = getSessionToken(cookies())
+  const c = cookies()
+  const token = c.get('session')?.value
   if (token) await clearSession(token)
   const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   const res = NextResponse.redirect(new URL('/login?msg=logged-out', base))
