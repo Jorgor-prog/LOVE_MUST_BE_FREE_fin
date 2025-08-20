@@ -1,49 +1,55 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 model User {
-  id            Int       @id @default(autoincrement())
-  role          Role      @default(USER)
-  loginId       String    @unique
+  id            Int        @id @default(autoincrement())
+  role          Role       @default(USER)
+  loginId       String     @unique
   loginPassword String
   adminNoteName String?
   profile       Profile?
-  messagesFrom  Message[] @relation("from")
-  messagesTo    Message[] @relation("to")
+  messagesFrom  Message[]  @relation("from")
+  messagesTo    Message[]  @relation("to")
   sessions      Session[]
   codeConfig    CodeConfig?
 }
 
 model Profile {
-  userId   Int    @id
+  userId     Int     @id
   nameOnSite String?
-  idOnSite String?
-  residence String?
-  photoUrl  String?
-  user     User   @relation(fields: [userId], references: [id])
+  idOnSite   String?
+  residence  String?
+  photoUrl   String?
+  user       User    @relation(fields: [userId], references: [id])
 }
 
 model Message {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   fromId    Int
   toId      Int
   text      String
   createdAt DateTime @default(now())
-  from      User   @relation("from", fields: [fromId], references: [id])
-  to        User   @relation("to", fields: [toId], references: [id])
+  from      User     @relation("from", fields: [fromId], references: [id])
+  to        User     @relation("to",   fields: [toId],   references: [id])
 }
 
 model Session {
-  token   String @id
-  userId  Int
+  token     String   @id
+  userId    Int
   createdAt DateTime @default(now())
-  user    User  @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model CodeConfig {
-  userId     Int   @id
-  codeText   String @default("")
-  intervalMs Int    @default(200)
+  userId     Int     @id
+  codeText   String  @default("")
+  intervalMs Int     @default(200)
   paused     Boolean @default(false)
   lastStep   Int     @default(1)
   offset     Int     @default(0)
