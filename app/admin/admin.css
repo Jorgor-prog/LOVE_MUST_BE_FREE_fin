@@ -1,57 +1,8 @@
-.admin-root {
-  min-height: 100dvh;
-  background-image: url('/images/Background_1.webp');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-.admin-topbar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 10px 14px;
-  background: rgba(0,0,0,.6);
-  backdrop-filter: blur(6px);
-  z-index: 50;
-}
-.admin-brand {
-  font-weight: 700;
-  color: #fff;
-}
-.admin-nav {
-  display: flex;
-  gap: 12px;
-  margin-left: 8px;
-}
-.admin-link {
-  color: #9bdcff;
-  text-decoration: none;
-  font-weight: 500;
-}
-.admin-link:hover {
-  text-decoration: underline;
-}
-.admin-logout {
-  margin-left: auto;
-  background: #ff4d4f;
-  color: #fff;
-  border-radius: 6px;
-  padding: 6px 10px;
-  text-decoration: none;
-}
-.admin-content {
-  position: relative;
-  min-height: calc(100dvh - 52px);
-}
-.bg-logo {
-  position: fixed;
-  inset: 0;
-  margin: auto;
-  width: min(40vw, 420px);
-  height: auto;
-  opacity: .12;
-  pointer-events: none;
-  z-index: 0;
-}
+.user-logo-bg{display:none}
+.admin-shell{min-height:100dvh}
+.admin-topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,.6);backdrop-filter:saturate(120%) blur(6px)}
+.admin-brand{font-weight:700}
+.admin-nav{display:flex;gap:14px;align-items:center}
+.admin-nav a{color:#fff;text-decoration:none}
+.btn-logout{padding:6px 10px;border-radius:6px;background:#dc2626;color:#fff}
+.admin-content{padding:16px}
