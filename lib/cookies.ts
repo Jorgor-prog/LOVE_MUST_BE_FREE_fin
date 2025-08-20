@@ -12,10 +12,6 @@ export function getSessionToken(c?: CookieStore): string {
   return jar(c).get(SESSION_COOKIE)?.value || ''
 }
 
-export function getSession(c?: CookieStore): string {
-  return getSessionToken(c)
-}
-
 export async function createSession(token: string, c?: CookieStore): Promise<void> {
   jar(c).set(SESSION_COOKIE, token, {
     httpOnly: true,
