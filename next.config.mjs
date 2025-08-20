@@ -1,14 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    remotePatterns: [
-      { protocol:'https', hostname:'i.imgur.com' },
-      { protocol:'https', hostname:'res.cloudinary.com' },
-      { protocol:'https', hostname:'images.unsplash.com' },
-      { protocol:'https', hostname:'lh3.googleusercontent.com' },
-      { protocol:'https', hostname:'pbs.twimg.com' }
-    ]
-  },
-  experimental: {}
+  images: { unoptimized: true, formats: ['image/webp'] },
+  reactStrictMode: false
 }
 export default nextConfig
