@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { clearSession } from '@/lib/cookies'
 
-export async function GET(req: Request) {
-  const res = NextResponse.redirect(new URL('/login?msg=logged-out', req.url))
-  res.headers.set('Set-Cookie', 'session=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax; Secure')
+export async function GET() {
+  await clearSession(cookies())
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const res = NextResponse.redirect(new URL('/login?msg=logged-out', base))
   res.headers.set('Cache-Control', 'no-store')
   return res
 }
