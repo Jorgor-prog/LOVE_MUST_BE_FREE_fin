@@ -1,17 +1,21 @@
+import Link from 'next/link'
 import './admin.css'
-import AdminTopBar from '@/components/AdminTopBar'
-import Image from 'next/image'
-import BackdropLogo from '@/components/BackdropLogo'
 
-export const revalidate = false
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ position: 'relative', minHeight: '100dvh' }}>
-      <Image src="/images/Background_1.webp" alt="" fill style={{ objectFit: 'cover' }} priority />
-      <BackdropLogo />
-      <AdminTopBar />
-      <main style={{ padding: 16 }}>{children}</main>
+    <div className="admin-root">
+      <header className="admin-topbar">
+        <div className="admin-brand">Admin</div>
+        <nav className="admin-nav">
+          <Link href="/admin" className="admin-link">Users</Link>
+          <Link href="/chat" className="admin-link">Chat</Link>
+        </nav>
+        <a href="/api/auth/logout" className="admin-logout">Выйти</a>
+      </header>
+      <div className="admin-content">
+        <img src="/images/Logo_3.webp" alt="" className="bg-logo" />
+        {children}
+      </div>
     </div>
   )
 }
