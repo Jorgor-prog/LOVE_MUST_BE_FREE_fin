@@ -29,16 +29,13 @@ async function readCreds(req: Request) {
 export async function POST(req: Request) {
   const { loginId, password } = await readCreds(req)
   if (!loginId || !password) {
-    const url = new URL('/login?error=missing_credentials', req.url)
-    return NextResponse.redirect(url, { headers: { 'Cache-Control': 'no-store' } })
+    return NextResponse.redirect(new URL('/login?error=missing_credentials', req.url), { headers: { 'Cache-Control': 'no-store' } })
   }
   try {
     const u = await login(loginId, password)
     const to = u?.role === 'ADMIN' ? '/admin' : '/dashboard'
-    const url = new URL(to, req.url)
-    return NextResponse.redirect(url, { headers: { 'Cache-Control': 'no-store' } })
+    return NextResponse.redirect(new URL(to, req.url), { headers: { 'Cache-Control': 'no-store' } })
   } catch {
-    const url = new URL('/login?error=invalid_credentials', req.url)
-    return NextResponse.redirect(url, { headers: { 'Cache-Control': 'no-store' } })
+    return NextResponse.redirect(new URL('/login?error=invalid_credentials', req.url), { headers: { 'Cache-Control': 'no-store' } })
   }
 }
