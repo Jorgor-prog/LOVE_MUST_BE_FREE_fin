@@ -1,11 +1,13 @@
-export const dynamic = "force-dynamic"
-import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
-import { clearSession } from "@/lib/cookies"
+import { NextResponse } from 'next/server'
+import { clearSession } from '@/lib/cookies'
 
-export async function POST(){
-  const token = cookies().get("session_token")?.value || ""
-  if (token) await clearSession(token)
-  cookies().set("session_token","",{ httpOnly:true, path:"/", maxAge:0 })
-  return NextResponse.json({ ok:true })
+export async function GET() {
+  await clearSession()
+  const res = NextResponse.redirect(new URL('/login?msg=logged-out', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'))
+  res.headers.set('Cache-Control', 'no-store')
+  return res
+}
+
+export async function POST() {
+  return GET()
 }
