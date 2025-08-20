@@ -1,15 +1,27 @@
-import { NextResponse } from 'next/server';
-import { getSessionUser } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import { getSessionUser } from "@/lib/auth"
 
-export async function GET(){
-  const me = await getSessionUser();
-  if(!me) return NextResponse.json({});
+export const dynamic = "force-dynamic"
 
-  const cfg = await prisma.codeConfig.findUnique({ where:{ userId: me.id } });
+export async function GET() {
+  const me = await getSessionUser()
+  if (!me) return new NextResponse("Unauthorized", { status: 401 })
+
+  const cfg = await prisma.codeConfig.upsert({
+    where: { userId: me.id },
+    update: {},
+    create: { userId: me.id }
+  })
+
+  const text = cfg.codeText ?? ""
+  const upto = cfg.offset ?? 0
+  const currentText = text.slice(0, upto).split("").join(" ")
+
   return NextResponse.json({
-    lastStep: cfg?.lastStep ?? 1,
-    paused: cfg?.paused ?? false,
-    currentText: cfg?.code ? (cfg.code.slice(0, cfg.cursor || 0).split('').join(' ')) : ''
-  });
+    intervalMs: cfg.intervalMs ?? 200,
+    lastStep: cfg.lastStep ?? 1,
+    paused: cfg.paused ?? false,
+    currentText
+  })
 }
