@@ -1,22 +1,35 @@
 import { NextResponse } from 'next/server'
-import { login } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { compare } from 'bcryptjs'
+import { createSession } from '@/lib/cookies'
+
+async function readBody(req: Request) {
+  const ct = req.headers.get('content-type') || ''
+  if (ct.includes('application/json')) {
+    const b = await req.json()
+    return { loginId: String(b.loginId || ''), password: String(b.password || '') }
+  }
+  const fd = await req.formData()
+  return { loginId: String(fd.get('loginId') || ''), password: String(fd.get('password') || '') }
+}
 
 export async function POST(req: Request) {
-  const ct = req.headers.get('content-type') || ''
-  let loginId = ''
-  let password = ''
+  const { loginId, password } = await readBody(req)
+  if (!loginId || !password) return NextResponse.json({ error: 'missing' }, { status: 400 })
 
-  if (ct.includes('application/x-www-form-urlencoded') || ct.includes('multipart/form-data')) {
-    const form = await req.formData()
-    loginId = String(form.get('loginId') ?? '')
-    password = String(form.get('password') ?? '')
-  } else {
-    const body = await req.json().catch(() => ({} as any))
-    loginId = String(body.loginId ?? '')
-    password = String(body.password ?? '')
-  }
+  const user = await prisma.user.findUnique({ where: { loginId } })
+  if (!user) return NextResponse.json({ error: 'invalid' }, { status: 401 })
 
-  await login(loginId, password)
+  const ok = await compare(password, user.loginPassword)
+  if (!ok) return NextResponse.json({ error: 'invalid' }, { status: 401 })
+
+  const token = crypto.randomUUID()
+  await prisma.session.create({ data: { token, userId: user.id } })
+  await createSession(token)
+
   const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return NextResponse.redirect(new URL('/', base))
+  const to = user.role === 'ADMIN' ? '/admin' : '/dashboard'
+  const res = NextResponse.redirect(new URL(to, base))
+  res.headers.set('Cache-Control', 'no-store')
+  return res
 }
