@@ -1,21 +1,18 @@
-import Link from 'next/link'
 import './admin.css'
+import Link from 'next/link'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="admin-root">
-      <header className="admin-topbar">
+    <div className="admin-shell">
+      <div className="admin-topbar">
         <div className="admin-brand">Admin</div>
         <nav className="admin-nav">
-          <Link href="/admin" className="admin-link">Users</Link>
-          <Link href="/chat" className="admin-link">Chat</Link>
+          <Link href="/admin">Users</Link>
+          <Link href="/admin/chats">Chats</Link>
+          <a href="/api/auth/logout" className="btn-logout">Logout</a>
         </nav>
-        <a href="/api/auth/logout" className="admin-logout">Выйти</a>
-      </header>
-      <div className="admin-content">
-        <img src="/images/Logo_3.webp" alt="" className="bg-logo" />
-        {children}
       </div>
+      <div className="admin-content">{children}</div>
     </div>
   )
 }
