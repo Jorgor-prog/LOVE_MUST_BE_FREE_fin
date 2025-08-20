@@ -16,3 +16,14 @@ body{margin:0;font-family:Inter,system-ui,Arial;background:#0b1220;color:#e5e7eb
 @media(max-width:760px){.grid2{grid-template-columns:1fr}}
 .link{color:#93c5fd;text-decoration:none}
 small.muted{color:#9ca3af}
+.user-logo-bg{
+  position:fixed;
+  inset:0;
+  margin:auto;
+  width:clamp(220px,38vw,560px);
+  height:auto;
+  opacity:1;
+  z-index:0;
+  pointer-events:none;
+  filter:none;
+}
