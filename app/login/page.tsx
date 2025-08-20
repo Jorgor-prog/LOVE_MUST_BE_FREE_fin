@@ -1,23 +1,23 @@
-import Image from "next/image"
+import Image from 'next/image'
 
-export const metadata = { title: "Sign in | LOVE MUST BE FREE" }
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
-export default function LoginPage() {
+export default function Page() {
   return (
-    <div style={{position:"relative", minHeight:"100dvh"}}>
-      <Image src="/images/Background_1.webp" alt="" fill style={{objectFit:"cover"}} priority />
-      <div style={{position:"absolute", inset:0, display:"grid", placeItems:"center"}}>
-        <form method="post" action="/api/auth/login" style={{width:"100%", maxWidth:420, background:"rgba(0,0,0,.6)", padding:24, borderRadius:16, color:"#fff", backdropFilter:"blur(6px)"}}>
-          <div style={{textAlign:"center", marginBottom:16}}>
-            <Image src="/images/Logo_3.webp" alt="Logo" width={120} height={120} />
-            <h1 style={{marginTop:12, fontSize:22, fontWeight:700}}>Sign in</h1>
-          </div>
-          <label style={{display:"block", fontSize:12, opacity:.9}}>Login</label>
-          <input name="loginId" required placeholder="Enter login" autoComplete="username" style={{width:"100%", marginTop:6, marginBottom:14, padding:"10px 12px", borderRadius:10, border:"1px solid #333", background:"#0b1220", color:"#fff"}} />
-          <label style={{display:"block", fontSize:12, opacity:.9}}>Password</label>
-          <input type="password" name="password" required placeholder="Enter password" autoComplete="current-password" style={{width:"100%", marginTop:6, marginBottom:18, padding:"10px 12px", borderRadius:10, border:"1px solid #333", background:"#0b1220", color:"#fff"}} />
-          <button type="submit" style={{width:"100%", padding:"10px 14px", borderRadius:10, border:"none", background:"#1e90ff", color:"#fff", fontWeight:700}}>Continue</button>
-          <p style={{marginTop:10, textAlign:"center", fontSize:12, opacity:.8}}>Having trouble? Contact support.</p>
+    <div style={{ position: 'relative', minHeight: '100dvh' }}>
+      <Image src="/images/Background_1.webp" alt="" fill priority style={{ objectFit: 'cover' }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
+        <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', zIndex: 0, pointerEvents: 'none' }}>
+          <Image src="/images/Logo_3.webp" alt="" width={520} height={520} />
+        </div>
+        <form action="/api/auth/login" method="post" style={{ zIndex: 1, width: '100%', maxWidth: 420, background: 'rgba(255,255,255,0.9)', borderRadius: 12, padding: 24, boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+          <h1 style={{ margin: 0, marginBottom: 16, fontSize: 28, fontWeight: 700, textAlign: 'center' }}>Sign in</h1>
+          <label style={{ display: 'block', fontSize: 14, marginBottom: 6 }}>Login</label>
+          <input name="loginId" required autoComplete="username" style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.15)', outline: 'none' }} />
+          <label style={{ display: 'block', fontSize: 14, marginTop: 14, marginBottom: 6 }}>Password</label>
+          <input type="password" name="password" required autoComplete="current-password" style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.15)', outline: 'none' }} />
+          <button type="submit" style={{ marginTop: 18, width: '100%', padding: '12px 14px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Continue</button>
         </form>
       </div>
     </div>
