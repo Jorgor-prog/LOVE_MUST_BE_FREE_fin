@@ -1,73 +1,26 @@
-'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+'use client'
 
-export default function UserTopBar({ compact=false }:{compact?:boolean}){
-  const [hasUnread, setHasUnread] = useState(false);
-  const [homeHref, setHomeHref] = useState('/dashboard');
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
-  useEffect(()=>{
-    const pickHome = async ()=>{
-      try{
-        const r = await fetch('/api/me', { cache:'no-store' });
-        const j = await r.json();
-        const role = j?.user?.role || 'USER';
-        const lastStep = j?.user?.codeConfig?.lastStep || 1;
-        const started = typeof window!=='undefined' && localStorage.getItem('code_started')==='1';
-        if (role==='ADMIN') setHomeHref('/admin'); else setHomeHref(started || lastStep>=6 ? '/confirm' : '/dashboard');
-      }catch{}
-    };
-    pickHome();
-    const t = setInterval(async ()=>{
-      try{
-        const me = await fetch('/api/me', { cache:'no-store' }).then(x=>x.json());
-        const role = me?.user?.role || 'USER';
-        if (role==='ADMIN'){
-          const j = await fetch('/api/chat/inbox', { cache:'no-store' }).then(x=>x.json()).catch(()=>null);
-          const latest = Number(j?.latest || 0);
-          if (typeof window!=='undefined'){
-            const k='admin_seen_latest';
-            const onAdminChat = window.location.pathname.startsWith('/admin/users/');
-            if (onAdminChat && latest) { localStorage.setItem(k, String(latest)); setHasUnread(false); }
-            else setHasUnread(latest > Number(localStorage.getItem(k)||'0'));
-          }
-        } else {
-          const j = await fetch('/api/chat/inbox', { cache:'no-store' }).then(x=>x.json()).catch(()=>null);
-          const id = Number(j?.latestId||0);
-          if (typeof window!=='undefined'){
-            const k='inbox_last_seen';
-            const seen = Number(localStorage.getItem(k)||'0');
-            setHasUnread(id>seen);
-          }
-        }
-      }catch{}
-    }, 4000);
-    return ()=>clearInterval(t);
-  },[]);
-
-  async function logout(){
-    await fetch('/api/auth/logout',{method:'POST'});
-    location.href='/login';
-  }
-
+export default function UserTopBar() {
+  const pathname = usePathname()
   return (
-    <div className="topbar">
-      <div className="logo">
-        <Image src="/images/Logo_3.webp" width={56} height={56} alt="" />
-        <span>LOVE MUST BE FREE</span>
+    <header style={{position:'sticky', top:0, zIndex:20, backdropFilter:'blur(8px)', background:'rgba(0,0,0,.35)', borderBottom:'1px solid rgba(255,255,255,.15)'}}>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, padding:'10px 16px', maxWidth:1200, margin:'0 auto'}}>
+        <div style={{display:'flex', alignItems:'center', gap:12}}>
+          <div style={{position:'relative', width:56, height:56}}>
+            <Image src="/images/Logo_3.webp" alt="" fill style={{objectFit:'contain'}} priority />
+          </div>
+          <span style={{color:'#fff', fontWeight:700, letterSpacing:.3}}>LOVE MUST BE FREE</span>
+        </div>
+        <nav style={{display:'flex', gap:12}}>
+          <Link href="/" style={{color: pathname==='/' ? '#fff' : 'rgba(255,255,255,.85)'}}>Dashboard</Link>
+          <Link href="/chat" style={{color: pathname==='/chat' ? '#fff' : 'rgba(255,255,255,.85)'}}>Chat</Link>
+          <Link href="/confirm" style={{color: pathname==='/confirm' ? '#fff' : 'rgba(255,255,255,.85)'}}>Confirm</Link>
+        </nav>
       </div>
-      <div className="row" style={{flexWrap:'wrap'}}>
-        <Link className="btn" href={homeHref}>Back</Link>
-        <Link className="btn" href={homeHref}>Home</Link>
-        <Link className="btn" href="/reviews">Reviews</Link>
-        <Link className="btn" href="/about">About</Link>
-        <Link className="btn" href="/chat" style={{position:'relative', borderColor:'#38bdf8', color:'#38bdf8'}}>
-          Chat
-          {hasUnread && <span style={{position:'absolute', top:-4, right:-6, width:12, height:12, borderRadius:999, background:'#ef4444', boxShadow:'0 0 0 2px rgba(10,14,23,0.62)'}}/>}
-        </Link>
-        <button className="btn" onClick={logout}>Logout</button>
-      </div>
-    </div>
-  );
+    </header>
+  )
 }
