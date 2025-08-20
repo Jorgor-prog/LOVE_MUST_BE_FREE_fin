@@ -18,6 +18,8 @@ model User {
   messagesTo    Message[]  @relation("to")
   sessions      Session[]
   codeConfig    CodeConfig?
+  isOnline      Boolean    @default(false)
+  lastSeen      DateTime?
 }
 
 model Profile {
