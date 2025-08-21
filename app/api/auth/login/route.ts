@@ -15,19 +15,13 @@ async function readBody(req: Request) {
 
 export async function POST(req: Request) {
   const { loginId, password } = await readBody(req)
-
   const user = await prisma.user.findUnique({ where: { loginId } })
   if (!user) return NextResponse.json({ error: 'invalid' }, { status: 401 })
-
   const ok = await compare(password, user.loginPassword)
   if (!ok) return NextResponse.json({ error: 'invalid' }, { status: 401 })
-
-  await createSession(user.id)
-
+  await createSession(String(user.id))
   const path = user.role === 'ADMIN' ? '/admin' : '/dashboard'
   const wantsHtml = (req.headers.get('accept') || '').includes('text/html')
-  if (wantsHtml) {
-    return NextResponse.redirect(new URL(path, req.url), { status: 303 })
-  }
+  if (wantsHtml) return NextResponse.redirect(new URL(path, req.url), { status: 303 })
   return NextResponse.json({ ok: true, redirect: path })
 }
